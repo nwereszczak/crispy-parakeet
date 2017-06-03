@@ -8,43 +8,25 @@ import logging
 import json
 import argparse
 import os.path as path
+import subprocess
 import inotify.adapters
 
 from multiprocessing import Process, Queue
 from builtins import any
 
+# Custom imports
+import INotifyObj
+import Conf
+
 # GLOBAL VARS
 _DEFAULT_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 _LOGGER = logging.getLogger(__name__)
-_GOOD_ACTIONS = ['IN_MOVED_TO', 'IN_CREATE']
+
 
 # ------------------------------------------------------------------------------
-class Data:
-    action = None
-    isDir = False
-    watchPath = None
-    name = None
-
-    def __init__(self, tn, wp, n):
-        self.action = tn[0]
-        if tn[1] == "IN_ISDIR":
-            self.isDir = True
-        self.watchPath = wp
-        if n != '':
-            self.name = n
-
-    def __str__(self):
-        s = "\nAction:\t\t" + str(self.action)
-        s += "\nIs a Dir:\t" + str(self.isDir)
-        s += "\nWatch Path:\t" + str(self.watchPath)
-        s += "\nName:\t\t" + str(self.name)
-        return s
-
-    def getName(self):
-        return self.name
-
-    def getAction(self):
-        return self.action
+class File:
+    def __init__(self):
+        print("File init()")
 
 
 # ------------------------------------------------------------------------------
@@ -74,7 +56,7 @@ def watch(q, path):
                 #_LOGGER.info("MASK->NAMES=%s WATCH-PATH=[%s] FILENAME=[%s]",
                 #             type_names,
                 #             watch_path.decode('utf-8'), filename.decode('utf-8'))
-                d = Data(type_names, watch_path.decode('utf-8'), filename.decode('utf-8'))
+                d = INotifyObj(type_names, watch_path.decode('utf-8'), filename.decode('utf-8'))
                 q.put(d)
     finally:
         i.remove_watch(wp)
@@ -82,6 +64,9 @@ def watch(q, path):
 
 # ------------------------------------------------------------------------------
 def _main():
+    # grab info from configure file
+    c = Conf()
+
     watchQueue = Queue()
 
     # get args
@@ -108,11 +93,11 @@ def _main():
             continue
 
         # only monitor moves into the dir & creation of files in dir
-        if not any(d.getAction() in a for a in _GOOD_ACTIONS):
+        if not any(d.getAction() in a for a in c.getActions()):
             continue
 
-        _LOGGER.info(" ==> Data\n----------------------------------------%s", d)
-
+        _LOGGER.info(" ==> INotifyObj\n----------------------------------------%s", d)
+        
 
     watchProcess.join() # this will stop the watch
 
