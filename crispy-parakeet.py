@@ -5,18 +5,16 @@
 
 # ------------------------------------------------------------------------------
 import logging
-import json
 import argparse
-import os.path as path
-import subprocess
+import os
+from fnmatch import fnmatch
 import inotify.adapters
-
 from multiprocessing import Process, Queue
 from builtins import any
 
 # Custom imports
-import INotifyObj
-import Conf
+from INotifyObj import INotifyObj
+from Conf import Conf
 
 # GLOBAL VARS
 _DEFAULT_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -39,6 +37,18 @@ def _configureLogging():
     ch.setFormatter(formatter)
 
     _LOGGER.addHandler(ch)
+
+
+# ------------------------------------------------------------------------------
+def _find(path, match):
+    files = []
+
+    for dirpath, dirnames, filenames in os.walk(path):
+        for f in filenames:
+            if fnmatch(f, match):
+                files.append(f)
+
+    return files
 
 
 # ------------------------------------------------------------------------------
@@ -75,15 +85,20 @@ def _main():
     args = parser.parse_args()
 
     # get abs path
-    d = path.abspath(args.directory)
+    d = os.path.abspath(args.directory)
 
-    if not path.isdir(d):
+    if not os.path.isdir(d):
         print("Not a directory!  Exiting...")
         exit(1)
 
     # watch dir
     watchProcess = Process(target=watch, args=(watchQueue, d,))
     watchProcess.start()
+
+    # test finding files
+    match = "*silicon*valley*.mkv"
+    files = _find(d, match)
+    print(files)
 
     while True:
         d = watchQueue.get()
