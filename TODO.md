@@ -5,12 +5,13 @@
 ### Watch a signal directory that will contain movies and tv shows.
 * Use inotify for python (linux only) 
 
-### When a new item appears it will first be found on either thetvdb.com or themoviedb.org 
-* Both seems to have a free to use API with n account
-* Then they will be used to find and rename the files
-* Note: Might not have to find them in the database since plex does that.  Just need a clean rename.
+### When a new item appears it will be renamed  
+* Will end up using 'filebot' for now.  Using subproccess to call it from command line since it is programmed in java :(. 
+* Maybe I will look at it and recode it in python at some point to use as a lib.
+* Since it's guess work isnt the best I will keep a db of the movies/tvshows I have so far.  Might be able to just link it with sickrage or steal its db file.
+* Find them in the database since plex does that.  Just need a clean rename.
 
-### Once the file’s new name is found then it is time to covert it.
+### Once the file's new name is found then it is time to covert it.
 * Use ffmpeg and ffmprobe
 * Maybe create my own little API lib for ffmpeg to convert to h254 and acc/ac3 audio.
 * Also add option to burn in subtitles using a given srt file or the file already embedded
