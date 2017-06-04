@@ -3,6 +3,10 @@
 #
 # Conf.py
 
+import subprocess
+import os.path as path
+import json
+
 # ------------------------------------------------------------------------------
 class Conf:
     __path = "./cp.conf"
