@@ -1,5 +1,7 @@
 # TODO
 
+## Note: Looks like sickrage can rename and move the tv shows into plex.  Kind of disapointing since it does some of this.
+
 ## What will it do?
 
 ### Watch a signal directory that will contain movies and tv shows.
